@@ -177,8 +177,8 @@ body {
 }
 
 .company-logo-img {
-  max-height: 120px;
-  max-width: 280px;
+  max-height: 110px;
+  max-width: 300px;
   object-fit: contain;
 }
 

@@ -171,13 +171,15 @@ function App() {
               {logoImage ? (
                 <div style={{ 
                   background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
-                  borderRadius: logoBgOpacity > 0 ? '16px' : '0',
+                  borderRadius: '16px',
                   boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  width: logoBgOpacity > 0 ? '300px' : 'auto',
-                  height: logoBgOpacity > 0 ? '110px' : 'auto'
+                  width: '300px',
+                  height: '110px',
+                  overflow: 'hidden',
+                  position: 'relative'
                 }}>
                   <img 
                     src={logoImage} 
