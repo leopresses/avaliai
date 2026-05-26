@@ -179,6 +179,7 @@ body {
   max-height: 80px;
   max-width: 250px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .google-stars {
@@ -277,7 +278,7 @@ body {
 
 .header-controls {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
   width: 100%;
