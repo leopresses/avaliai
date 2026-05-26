@@ -9,6 +9,7 @@ const googleGBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy5
 function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
+  const [logoSize, setLogoSize] = useState(100);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
 
@@ -78,13 +79,31 @@ function App() {
               <button 
                 className="btn" 
                 style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}
-                onClick={() => setLogoImage(null)}
+                onClick={() => {
+                  setLogoImage(null);
+                  setLogoSize(100);
+                }}
               >
                 Remover
               </button>
             )}
           </div>
         </div>
+
+        {logoImage && (
+          <div className="form-group">
+            <label>Tamanho da Logo: {logoSize}%</label>
+            <input 
+              type="range" 
+              min="50" 
+              max="400" 
+              value={logoSize} 
+              onChange={(e) => setLogoSize(Number(e.target.value))} 
+              className="color-slider"
+              style={{ background: '#cbd5e1' }}
+            />
+          </div>
+        )}
 
         <div className="form-group">
           <label>Nome da Empresa</label>
@@ -136,7 +155,9 @@ function App() {
             
             <div className="display-header">
               {logoImage ? (
-                <img src={logoImage} alt="Logotipo da Empresa" className="company-logo-img" />
+                <div style={{ transform: `scale(${logoSize / 100})`, transition: 'transform 0.1s' }}>
+                  <img src={logoImage} alt="Logotipo da Empresa" className="company-logo-img" />
+                </div>
               ) : (
                 <h1 className="company-name">{companyName || 'Sua Empresa'}</h1>
               )}
