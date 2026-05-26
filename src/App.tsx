@@ -134,12 +134,11 @@ function App() {
         <div className="display-card" ref={displayRef} style={{ background: gradientBg }}>
           <div className="glass-panel">
             
-            <div className="display-header" style={{ flexDirection: 'column', gap: '10px' }}>
-              {logoImage && (
+            <div className="display-header">
+              {logoImage ? (
                 <img src={logoImage} alt="Logotipo da Empresa" className="company-logo-img" />
-              )}
-              {companyName && (
-                <h1 className="company-name">{companyName}</h1>
+              ) : (
+                <h1 className="company-name">{companyName || 'Sua Empresa'}</h1>
               )}
             </div>
 
