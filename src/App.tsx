@@ -167,17 +167,22 @@ function App() {
             <div className="display-header">
               {logoImage ? (
                 <div style={{ 
-                  transform: `scale(${logoSize / 100})`, 
-                  transition: 'all 0.1s',
                   background: logoDarkBg ? 'rgba(0, 0, 0, 0.75)' : 'transparent',
                   padding: logoDarkBg ? '1.5rem 3rem' : '0',
                   borderRadius: logoDarkBg ? '24px' : '0',
                   boxShadow: logoDarkBg ? '0 10px 25px rgba(0,0,0,0.3)' : 'none',
                   display: 'inline-flex',
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  minWidth: logoDarkBg ? '200px' : 'auto',
+                  minHeight: logoDarkBg ? '90px' : 'auto'
                 }}>
-                  <img src={logoImage} alt="Logotipo da Empresa" className="company-logo-img" />
+                  <img 
+                    src={logoImage} 
+                    alt="Logotipo da Empresa" 
+                    className="company-logo-img" 
+                    style={{ transform: `scale(${logoSize / 100})`, transition: 'all 0.1s' }}
+                  />
                 </div>
               ) : (
                 <h1 className="company-name">{companyName || 'Sua Empresa'}</h1>
