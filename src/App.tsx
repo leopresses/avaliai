@@ -10,7 +10,7 @@ function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [logoSize, setLogoSize] = useState(100);
-  const [logoDarkBg, setLogoDarkBg] = useState(true);
+  const [logoBgOpacity, setLogoBgOpacity] = useState(45);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
 
@@ -104,15 +104,18 @@ function App() {
               style={{ background: '#cbd5e1' }}
             />
             
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '1rem', cursor: 'pointer', fontWeight: 600, color: '#334155' }}>
-              <input 
-                type="checkbox" 
-                checked={logoDarkBg}
-                onChange={(e) => setLogoDarkBg(e.target.checked)}
-                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-              />
-              Fundo Escuro (para logos claras)
+            <label style={{ display: 'block', marginTop: '1rem', fontWeight: 600, color: '#334155', fontSize: '0.9rem' }}>
+              Fundo Escuro da Logo: {logoBgOpacity}%
             </label>
+            <input 
+              type="range" 
+              min="0" 
+              max="100" 
+              value={logoBgOpacity} 
+              onChange={(e) => setLogoBgOpacity(Number(e.target.value))} 
+              className="color-slider"
+              style={{ background: '#cbd5e1' }}
+            />
           </div>
         )}
 
@@ -167,14 +170,14 @@ function App() {
             <div className="display-header">
               {logoImage ? (
                 <div style={{ 
-                  background: logoDarkBg ? 'rgba(0, 0, 0, 0.45)' : 'transparent',
-                  borderRadius: logoDarkBg ? '16px' : '0',
-                  boxShadow: logoDarkBg ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                  background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
+                  borderRadius: logoBgOpacity > 0 ? '16px' : '0',
+                  boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  width: logoDarkBg ? '300px' : 'auto',
-                  height: logoDarkBg ? '110px' : 'auto'
+                  width: logoBgOpacity > 0 ? '300px' : 'auto',
+                  height: logoBgOpacity > 0 ? '110px' : 'auto'
                 }}>
                   <img 
                     src={logoImage} 
