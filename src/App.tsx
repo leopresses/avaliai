@@ -167,15 +167,14 @@ function App() {
             <div className="display-header">
               {logoImage ? (
                 <div style={{ 
-                  background: logoDarkBg ? 'rgba(0, 0, 0, 0.75)' : 'transparent',
-                  padding: logoDarkBg ? '1.5rem 3rem' : '0',
-                  borderRadius: logoDarkBg ? '24px' : '0',
-                  boxShadow: logoDarkBg ? '0 10px 25px rgba(0,0,0,0.3)' : 'none',
-                  display: 'inline-flex',
+                  background: logoDarkBg ? 'rgba(0, 0, 0, 0.45)' : 'transparent',
+                  borderRadius: logoDarkBg ? '16px' : '0',
+                  boxShadow: logoDarkBg ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                  display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  minWidth: logoDarkBg ? '200px' : 'auto',
-                  minHeight: logoDarkBg ? '90px' : 'auto'
+                  width: logoDarkBg ? '300px' : 'auto',
+                  height: logoDarkBg ? '110px' : 'auto'
                 }}>
                   <img 
                     src={logoImage} 
