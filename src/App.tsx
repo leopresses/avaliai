@@ -56,7 +56,7 @@ function App() {
       <aside className="sidebar">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '0.5rem' }}>
-            <img src="/logo.png" alt="Avali.ai Logo" style={{ width: '32px', height: '32px', borderRadius: '6px' }} />
+            <img src="/logo.svg" alt="Avali.ai Logo" style={{ width: '32px', height: '32px', borderRadius: '6px' }} />
             <h2 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
               Avali.ai
             </h2>

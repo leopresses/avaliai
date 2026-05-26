@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Letra A Minimalista -->
+  <path d="M100 25 L30 165 L70 165 L85 130 L115 130 L130 165 L170 165 L100 25 Z M93 105 L100 85 L107 105 Z" fill="url(#grad)"/>
+  
+  <!-- Estrela Dourada Mágica -->
+  <path d="M150 20 L155 35 L170 40 L158 50 L160 65 L148 58 L135 65 L138 50 L125 40 L140 35 Z" fill="#FBBF24"/>
+</svg>
