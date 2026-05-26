@@ -10,6 +10,7 @@ function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [logoSize, setLogoSize] = useState(100);
+  const [logoDarkBg, setLogoDarkBg] = useState(true);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
 
@@ -91,7 +92,7 @@ function App() {
         </div>
 
         {logoImage && (
-          <div className="form-group">
+          <div className="form-group" style={{ backgroundColor: '#f1f5f9', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
             <label>Tamanho da Logo: {logoSize}%</label>
             <input 
               type="range" 
@@ -102,6 +103,16 @@ function App() {
               className="color-slider"
               style={{ background: '#cbd5e1' }}
             />
+            
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '1rem', cursor: 'pointer', fontWeight: 600, color: '#334155' }}>
+              <input 
+                type="checkbox" 
+                checked={logoDarkBg}
+                onChange={(e) => setLogoDarkBg(e.target.checked)}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+              Fundo Escuro (para logos claras)
+            </label>
           </div>
         )}
 
@@ -155,7 +166,17 @@ function App() {
             
             <div className="display-header">
               {logoImage ? (
-                <div style={{ transform: `scale(${logoSize / 100})`, transition: 'transform 0.1s' }}>
+                <div style={{ 
+                  transform: `scale(${logoSize / 100})`, 
+                  transition: 'all 0.1s',
+                  background: logoDarkBg ? 'rgba(0, 0, 0, 0.75)' : 'transparent',
+                  padding: logoDarkBg ? '1.5rem 3rem' : '0',
+                  borderRadius: logoDarkBg ? '24px' : '0',
+                  boxShadow: logoDarkBg ? '0 10px 25px rgba(0,0,0,0.3)' : 'none',
+                  display: 'inline-flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
                   <img src={logoImage} alt="Logotipo da Empresa" className="company-logo-img" />
                 </div>
               ) : (
