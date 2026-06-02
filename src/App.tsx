@@ -14,6 +14,7 @@ function App() {
   const [callToAction, setCallToAction] = useState('Avalie-nos no Google');
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
+  const [bgStyle, setBgStyle] = useState('pastel'); // pastel, vibrant, dark
 
   const displayRef = useRef<HTMLDivElement>(null);
 
@@ -50,9 +51,20 @@ function App() {
     pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
   };
 
-  // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider
-  const gradientBg = `linear-gradient(135deg, hsl(${hue}, 85%, 85%) 0%, hsl(${(hue + 45) % 360}, 85%, 75%) 100%)`;
-  const titleColor = `hsl(${hue}, 80%, 25%)`; // Dark version of the selected color
+  // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
+  let gradientBg = '';
+  let titleColor = '';
+
+  if (bgStyle === 'pastel') {
+    gradientBg = `linear-gradient(135deg, hsl(${hue}, 85%, 85%) 0%, hsl(${(hue + 45) % 360}, 85%, 75%) 100%)`;
+    titleColor = `hsl(${hue}, 80%, 25%)`;
+  } else if (bgStyle === 'vibrant') {
+    gradientBg = `linear-gradient(135deg, hsl(${hue}, 100%, 65%) 0%, hsl(${(hue + 45) % 360}, 100%, 55%) 100%)`;
+    titleColor = `hsl(${hue}, 90%, 20%)`;
+  } else if (bgStyle === 'dark') {
+    gradientBg = `linear-gradient(135deg, hsl(${hue}, 60%, 25%) 0%, hsl(${(hue + 45) % 360}, 60%, 15%) 100%)`;
+    titleColor = `hsl(${hue}, 60%, 15%)`;
+  }
 
   return (
     <div className="app-container">
@@ -151,6 +163,19 @@ function App() {
             onChange={(e) => setReviewLink(e.target.value)}
             placeholder="https://g.page/r/..."
           />
+        </div>
+
+        <div className="form-group">
+          <label>Estilo do Fundo</label>
+          <select 
+            className="form-control" 
+            value={bgStyle} 
+            onChange={(e) => setBgStyle(e.target.value)}
+          >
+            <option value="pastel">Claro & Suave</option>
+            <option value="vibrant">Vibrante & Forte</option>
+            <option value="dark">Escuro Premium</option>
+          </select>
         </div>
 
         <div className="form-group">
