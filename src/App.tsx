@@ -11,6 +11,7 @@ function App() {
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [logoSize, setLogoSize] = useState(100);
   const [logoBgOpacity, setLogoBgOpacity] = useState(45);
+  const [callToAction, setCallToAction] = useState('Avalie-nos no Google');
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
 
@@ -131,6 +132,17 @@ function App() {
         </div>
 
         <div className="form-group">
+          <label>Chamada para Ação</label>
+          <input 
+            type="text" 
+            className="form-control" 
+            value={callToAction}
+            onChange={(e) => setCallToAction(e.target.value)}
+            placeholder="Ex: Avalie-nos no Google"
+          />
+        </div>
+
+        <div className="form-group">
           <label>Link de Avaliação do Google</label>
           <input 
             type="text" 
@@ -202,7 +214,7 @@ function App() {
             </div>
 
             <h2 className="display-title" style={{ color: titleColor }}>
-              Avalie-nos no Google
+              {callToAction || 'Avalie-nos no Google'}
             </h2>
 
             <div className="qr-container">
