@@ -12,6 +12,7 @@ function App() {
   const [logoSize, setLogoSize] = useState(100);
   const [logoBgOpacity, setLogoBgOpacity] = useState(45);
   const [callToAction, setCallToAction] = useState('Avalie-nos no Google');
+  const [qrIconImage, setQrIconImage] = useState<string | null>(null);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
   const [bgStyle, setBgStyle] = useState('pastel'); // pastel, vibrant, dark
@@ -24,6 +25,17 @@ function App() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleQrIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setQrIconImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -166,6 +178,26 @@ function App() {
         </div>
 
         <div className="form-group">
+          <label>Ícone no Centro do QR Code</label>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <label className="btn" style={{ flex: 1, backgroundColor: '#f1f5f9', border: '1px dashed #cbd5e1', cursor: 'pointer', color: '#475569' }}>
+              <Upload size={16} />
+              Trocar Ícone
+              <input type="file" accept="image/*" onChange={handleQrIconUpload} style={{ display: 'none' }} />
+            </label>
+            {qrIconImage && (
+              <button 
+                className="btn" 
+                style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}
+                onClick={() => setQrIconImage(null)}
+              >
+                Voltar pro Google
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="form-group">
           <label>Estilo do Fundo</label>
           <select 
             className="form-control" 
@@ -250,7 +282,7 @@ function App() {
                   level="H"
                   includeMargin={false}
                   imageSettings={{
-                    src: googleGBase64,
+                    src: qrIconImage || googleGBase64,
                     height: 48,
                     width: 48,
                     excavate: true,
