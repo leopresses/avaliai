@@ -58,6 +58,7 @@ function App() {
   const [logoSize, setLogoSize] = useState(100);
   const [logoBgOpacity, setLogoBgOpacity] = useState(45);
   const [callToAction, setCallToAction] = useState('Avalie-nos no Google');
+  const [instructionText, setInstructionText] = useState('Aponte a câmera do celular para o código acima');
   const [qrIconImage, setQrIconImage] = useState<string | null>(null);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
@@ -244,13 +245,24 @@ function App() {
         </div>
 
         <div className="form-group">
-          <label>Chamada para Ação</label>
+          <label>Chamada para Ação (Topo)</label>
           <input 
             type="text" 
             className="form-control" 
             value={callToAction}
             onChange={(e) => setCallToAction(e.target.value)}
             placeholder="Ex: Avalie-nos no Google"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Instrução (Rodapé)</label>
+          <input 
+            type="text" 
+            className="form-control" 
+            value={instructionText}
+            onChange={(e) => setInstructionText(e.target.value)}
+            placeholder="Ex: Aponte a câmera do celular para o código acima"
           />
         </div>
 
@@ -412,7 +424,7 @@ function App() {
             </div>
 
             <p className="instruction-text">
-              Aponte a câmera do celular para o código acima
+              {instructionText || 'Aponte a câmera do celular para o código acima'}
             </p>
 
             <div className="google-accent-bar"></div>
