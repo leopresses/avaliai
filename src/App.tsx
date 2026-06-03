@@ -6,6 +6,52 @@ import { Download, Star, QrCode, Upload } from 'lucide-react';
 
 const googleGBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIyLjU2IDEyLjI1YzAtLjc4LS4wNy0xLjUzLS4yLTIuMjVIMTJ2NC4yNmg1LjkyYy0uMjYgMS4zNy0xLjA0IDIuNTMtMi4yMSAzLjMxdjIuNzdoMy41N2MyLjA4LTEuOTIgMy4yOC00Ljc0IDMuMjgtOC4wOXoiIGZpbGw9IiM0Mjg1RjQiLz48cGF0aCBkPSJNMTIgMjNjMi45NyAwIDUuNDYtLjk4IDcuMjgtMi42NmwtMy41Ny0yLjc3Yy0uOTguNjYtMi4yMyAxLjA2LTMuNzEgMS4wNi0yLjg2IDAtNS4yOS0xLjkzLTYuMTYtNC41M0gyLjE4djIuODRDMy45OSAyMC41MyA3LjcgMjMgMTIgMjN6IiBmaWxsPSIjMzRBMDUzIi8+PHBhdGggZD0iTTUuODQgMTQuMDljLS4yMi0uNjYtLjM1LTEuMzYtLjM1LTIuMDlzLjEzLTEuNDMuMzUtMi4wOVY3LjA3SDIuMThDMS40MyA4LjU1IDEgMTAuMjIgMSAxMnMuNDMgMy40NSAxLjE4IDQuOTNsMi44NS0yLjIyLjgxLS42MnoiIGZpbGw9IiNGQkJDMDUiLz48cGF0aCBkPSJNMTIgNS4zOGMxLjYyIDAgMy4wNi41NiA0LjIxIDEuNjRsMy4xNS0zLjE1QzE3LjQ1IDIuMDkgMTQuOTcgMSAxMiAxIDcuNyAxIDMuOTkgMy40NyAyLjE4IDcuMDdsMy42NiAyLjg0Yy44Ny0yLjYgMy4zLTQuNTMgNi4xNi00LjUzeiIgZmlsbD0iI0VBNDMzNSIvPjwvc3ZnPg==";
 
+// Utility para processar imagens pesadas e redimensionar antes de salvar no estado
+const processImage = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      
+      const MAX_DIMENSION = 1200; // Tamanho máximo seguro para não travar o html2canvas (garante alta resolução p/ impressão A6)
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          // Exporta com qualidade 90% para jpeg, ou mantém png para transparência
+          resolve(canvas.toDataURL(file.type === 'image/jpeg' ? 'image/jpeg' : 'image/png', 0.9));
+          return;
+        }
+      }
+      
+      // Se não for muito grande ou o canvas falhar, lê o arquivo original como base64
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Falha ao ler o arquivo original"));
+      reader.readAsDataURL(file);
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Falha ao carregar a imagem"));
+    };
+    
+    img.src = objectUrl;
+  });
+};
+
 function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
@@ -19,25 +65,29 @@ function App() {
 
   const displayRef = useRef<HTMLDivElement>(null);
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const processedImage = await processImage(file);
+        setLogoImage(processedImage);
+      } catch (error) {
+        console.error("Erro ao processar logo:", error);
+        alert("Ocorreu um erro ao tentar processar esta imagem. Tente outro formato.");
+      }
     }
   };
 
-  const handleQrIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQrIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setQrIconImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const processedImage = await processImage(file);
+        setQrIconImage(processedImage);
+      } catch (error) {
+        console.error("Erro ao processar ícone do QR:", error);
+        alert("Ocorreu um erro ao tentar processar esta imagem. Tente outro formato.");
+      }
     }
   };
 
