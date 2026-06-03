@@ -62,6 +62,10 @@ function App() {
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
   const [hue, setHue] = useState(250); // Default to a nice purple/blue
   const [bgStyle, setBgStyle] = useState('pastel'); // pastel, vibrant, dark
+  const [showStars, setShowStars] = useState(true);
+  const [logoPos, setLogoPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
 
   const displayRef = useRef<HTMLDivElement>(null);
 
@@ -93,6 +97,7 @@ function App() {
 
   const handleDownload = async () => {
     if (!displayRef.current) return;
+    // ...html2canvas logic...
     
     const canvas = await html2canvas(displayRef.current, {
       scale: 3,
@@ -111,6 +116,24 @@ function App() {
     
     pdf.addImage(imgData, 'PNG', 0, 0, 105, 148);
     pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
+  };
+
+  // Drag handlers para a logo
+  const handleDragStart = (clientX: number, clientY: number) => {
+    setIsDragging(true);
+    dragStartRef.current = { x: clientX - logoPos.x, y: clientY - logoPos.y };
+  };
+
+  const handleDragMove = (clientX: number, clientY: number) => {
+    if (!isDragging) return;
+    setLogoPos({
+      x: clientX - dragStartRef.current.x,
+      y: clientY - dragStartRef.current.y
+    });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
   };
 
   // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
@@ -158,6 +181,7 @@ function App() {
                 onClick={() => {
                   setLogoImage(null);
                   setLogoSize(100);
+                  setLogoPos({ x: 0, y: 0 });
                 }}
               >
                 Remover
@@ -168,7 +192,17 @@ function App() {
 
         {logoImage && (
           <div className="form-group" style={{ backgroundColor: '#f1f5f9', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <label>Tamanho da Logo: {logoSize}%</label>
+            <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Tamanho da Logo: {logoSize}%</span>
+              {logoPos.x !== 0 || logoPos.y !== 0 ? (
+                <button 
+                  onClick={() => setLogoPos({ x: 0, y: 0 })}
+                  style={{ background: 'none', border: 'none', color: '#3b82f6', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Centralizar
+                </button>
+              ) : null}
+            </label>
             <input 
               type="range" 
               min="50" 
@@ -178,6 +212,10 @@ function App() {
               className="color-slider"
               style={{ background: '#cbd5e1' }}
             />
+            
+            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem', fontStyle: 'italic' }}>
+              Dica: Clique e arraste a logo na placa ao lado para ajustá-la.
+            </p>
             
             <label style={{ display: 'block', marginTop: '1rem', fontWeight: 600, color: '#334155', fontSize: '0.9rem' }}>
               Fundo Escuro da Logo: {logoBgOpacity}%
@@ -225,6 +263,18 @@ function App() {
             onChange={(e) => setReviewLink(e.target.value)}
             placeholder="https://g.page/r/..."
           />
+        </div>
+
+        <div className="form-group">
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <input 
+              type="checkbox" 
+              checked={showStars} 
+              onChange={(e) => setShowStars(e.target.checked)}
+              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+            />
+            Mostrar 5 Estrelas
+          </label>
         </div>
 
         <div className="form-group">
@@ -288,23 +338,37 @@ function App() {
             
             <div className="display-header">
               {logoImage ? (
-                <div style={{ 
-                  background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
-                  borderRadius: '16px',
-                  boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '300px',
-                  height: '110px',
-                  overflow: 'hidden',
-                  position: 'relative'
-                }}>
+                <div 
+                  style={{ 
+                    background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
+                    borderRadius: '16px',
+                    boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '300px',
+                    height: '110px',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    cursor: isDragging ? 'grabbing' : 'grab'
+                  }}
+                  onMouseDown={(e) => { e.preventDefault(); handleDragStart(e.clientX, e.clientY); }}
+                  onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
+                  onMouseUp={handleDragEnd}
+                  onMouseLeave={handleDragEnd}
+                  onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
+                  onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+                  onTouchEnd={handleDragEnd}
+                >
                   <img 
                     src={logoImage} 
                     alt="Logotipo da Empresa" 
                     className="company-logo-img" 
-                    style={{ transform: `scale(${logoSize / 100})`, transition: 'all 0.1s' }}
+                    style={{ 
+                      transform: `translate(${logoPos.x}px, ${logoPos.y}px) scale(${logoSize / 100})`, 
+                      transition: isDragging ? 'none' : 'all 0.1s',
+                      pointerEvents: 'none' // Previne a imagem de tentar ser arrastada nativamente pelo navegador
+                    }}
                   />
                 </div>
               ) : (
@@ -312,13 +376,15 @@ function App() {
               )}
             </div>
 
-            <div className="google-stars">
-              <Star fill="currentColor" size={26} />
-              <Star fill="currentColor" size={26} />
-              <Star fill="currentColor" size={26} />
-              <Star fill="currentColor" size={26} />
-              <Star fill="currentColor" size={26} />
-            </div>
+            {showStars && (
+              <div className="google-stars">
+                <Star fill="currentColor" size={26} />
+                <Star fill="currentColor" size={26} />
+                <Star fill="currentColor" size={26} />
+                <Star fill="currentColor" size={26} />
+                <Star fill="currentColor" size={26} />
+              </div>
+            )}
 
             <h2 className="display-title" style={{ color: titleColor }}>
               {callToAction || 'Avalie-nos no Google'}
