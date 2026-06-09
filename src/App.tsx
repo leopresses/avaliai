@@ -52,6 +52,70 @@ const processImage = (file: File): Promise<string> => {
   });
 };
 
+const getDominantColors = (imgSrc: string): Promise<[string, string]> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(['#e2e8f0', '#cbd5e1']);
+        return;
+      }
+      
+      const size = 64;
+      canvas.width = size;
+      canvas.height = size;
+      ctx.drawImage(img, 0, 0, size, size);
+      
+      const data = ctx.getImageData(0, 0, size, size).data;
+      const colorCounts: Record<string, number> = {};
+      
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i+1];
+        const b = data[i+2];
+        const a = data[i+3];
+        
+        // Ignore transparent and very light/dark colors to get true brand colors
+        if (a < 128 || (r > 240 && g > 240 && b > 240) || (r < 15 && g < 15 && b < 15)) continue;
+        
+        const rgb = `${Math.floor(r/16)*16},${Math.floor(g/16)*16},${Math.floor(b/16)*16}`;
+        colorCounts[rgb] = (colorCounts[rgb] || 0) + 1;
+      }
+      
+      const sortedColors = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
+      
+      if (sortedColors.length === 0) {
+        resolve(['#e2e8f0', '#cbd5e1']); 
+        return;
+      }
+      
+      const rgbToHex = (rgbStr: string) => {
+        const [r, g, b] = rgbStr.split(',').map(Number);
+        return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1).padStart(6, '0');
+      };
+      
+      const color1 = rgbToHex(sortedColors[0][0]);
+      let color2 = color1;
+      
+      for (let i = 1; i < sortedColors.length; i++) {
+        const [r1, g1, b1] = sortedColors[0][0].split(',').map(Number);
+        const [r2, g2, b2] = sortedColors[i][0].split(',').map(Number);
+        const dist = Math.abs(r1-r2) + Math.abs(g1-g2) + Math.abs(b1-b2);
+        if (dist > 60) {
+          color2 = rgbToHex(sortedColors[i][0]);
+          break;
+        }
+      }
+      resolve([color1, color2]);
+    };
+    img.onerror = () => resolve(['#e2e8f0', '#cbd5e1']);
+    img.src = imgSrc;
+  });
+};
+
 function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
@@ -61,8 +125,8 @@ function App() {
   const [instructionText, setInstructionText] = useState('Aponte a câmera do celular para o código acima');
   const [qrIconImage, setQrIconImage] = useState<string | null>(null);
   const [reviewLink, setReviewLink] = useState('https://g.page/r/exemplo/review');
-  const [hue, setHue] = useState(250); // Default to a nice purple/blue
-  const [bgStyle, setBgStyle] = useState('pastel'); // pastel, vibrant, dark
+  const [color1, setColor1] = useState('#818cf8');
+  const [color2, setColor2] = useState('#c084fc');
   const [showStars, setShowStars] = useState(true);
   const [logoPos, setLogoPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -76,6 +140,14 @@ function App() {
       try {
         const processedImage = await processImage(file);
         setLogoImage(processedImage);
+        
+        try {
+          const [c1, c2] = await getDominantColors(processedImage);
+          setColor1(c1);
+          setColor2(c2);
+        } catch (e) {
+          console.error("Erro ao extrair cores", e);
+        }
       } catch (error) {
         console.error("Erro ao processar logo:", error);
         alert("Ocorreu um erro ao tentar processar esta imagem. Tente outro formato.");
@@ -138,19 +210,8 @@ function App() {
   };
 
   // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
-  let gradientBg = '';
-  let titleColor = '';
-
-  if (bgStyle === 'pastel') {
-    gradientBg = `linear-gradient(135deg, hsl(${hue}, 85%, 85%) 0%, hsl(${(hue + 45) % 360}, 85%, 75%) 100%)`;
-    titleColor = `hsl(${hue}, 80%, 25%)`;
-  } else if (bgStyle === 'vibrant') {
-    gradientBg = `linear-gradient(135deg, hsl(${hue}, 100%, 65%) 0%, hsl(${(hue + 45) % 360}, 100%, 55%) 100%)`;
-    titleColor = `hsl(${hue}, 90%, 20%)`;
-  } else if (bgStyle === 'dark') {
-    gradientBg = `linear-gradient(135deg, hsl(${hue}, 60%, 25%) 0%, hsl(${(hue + 45) % 360}, 60%, 15%) 100%)`;
-    titleColor = `hsl(${hue}, 60%, 15%)`;
-  }
+  const gradientBg = `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
+  const titleColor = `#0f172a`; // A placa de vidro é branca, o texto pode ser sempre escuro
 
   return (
     <div className="app-container">
@@ -310,28 +371,24 @@ function App() {
         </div>
 
         <div className="form-group">
-          <label>Estilo do Fundo</label>
-          <select 
-            className="form-control" 
-            value={bgStyle} 
-            onChange={(e) => setBgStyle(e.target.value)}
-          >
-            <option value="pastel">Claro & Suave</option>
-            <option value="vibrant">Vibrante & Forte</option>
-            <option value="dark">Escuro Premium</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Cor do Fundo (Deslize para mudar)</label>
-          <input 
-            type="range" 
-            min="0" 
-            max="360" 
-            value={hue} 
-            onChange={(e) => setHue(Number(e.target.value))} 
-            className="color-slider"
-          />
+          <label>Cores do Fundo</label>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input 
+              type="color" 
+              value={color1} 
+              onChange={(e) => setColor1(e.target.value)} 
+              style={{ flex: 1, height: '40px', cursor: 'pointer', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '2px' }}
+            />
+            <input 
+              type="color" 
+              value={color2} 
+              onChange={(e) => setColor2(e.target.value)} 
+              style={{ flex: 1, height: '40px', cursor: 'pointer', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '2px' }}
+            />
+          </div>
+          <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>
+            Dica: Faça upload de uma logo e nós ajustamos as cores automaticamente!
+          </p>
         </div>
 
         <button className="btn btn-primary" onClick={handleDownload} style={{ marginTop: 'auto' }}>
