@@ -170,7 +170,11 @@ function App() {
 
   const handleDownload = async () => {
     if (!displayRef.current) return;
-    // ...html2canvas logic...
+    
+    // Removemos a sombra temporariamente porque o html2canvas tenta capturar a sombra
+    // e a converte em uma borda cinza/branca no PDF final
+    const originalShadow = displayRef.current.style.boxShadow;
+    displayRef.current.style.boxShadow = 'none';
     
     const canvas = await html2canvas(displayRef.current, {
       scale: 3,
@@ -178,6 +182,9 @@ function App() {
       backgroundColor: null,
       logging: false,
     });
+    
+    // Restaura a sombra na tela
+    displayRef.current.style.boxShadow = originalShadow;
     
     const imgData = canvas.toDataURL('image/png');
     
