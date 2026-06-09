@@ -194,7 +194,9 @@ function App() {
       format: 'a6'
     });
     
-    pdf.addImage(imgData, 'PNG', 0, 0, 105, 148);
+    // Adiciona 1mm de "sangria" (bleed) de cada lado para garantir que cubra a página inteira
+    // e elimine qualquer linha branca de borda (105+2 = 107, 148+2 = 150)
+    pdf.addImage(imgData, 'PNG', -1, -1, 107, 150);
     pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
   };
 
