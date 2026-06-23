@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { Download, Star, QrCode, Upload } from 'lucide-react';
 
 const googleGBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIyLjU2IDEyLjI1YzAtLjc4LS4wNy0xLjUzLS4yLTIuMjVIMTJ2NC4yNmg1LjkyYy0uMjYgMS4zNy0xLjA0IDIuNTMtMi4yMSAzLjMxdjIuNzdoMy41N2MyLjA4LTEuOTIgMy4yOC00Ljc0IDMuMjgtOC4wOXoiIGZpbGw9IiM0Mjg1RjQiLz48cGF0aCBkPSJNMTIgMjNjMi45NyAwIDUuNDYtLjk4IDcuMjgtMi42NmwtMy41Ny0yLjc3Yy0uOTguNjYtMi4yMyAxLjA2LTMuNzEgMS4wNi0yLjg2IDAtNS4yOS0xLjkzLTYuMTYtNC41M0gyLjE4djIuODRDMy45OSAyMC41MyA3LjcgMjMgMTIgMjN6IiBmaWxsPSIjMzRBMDUzIi8+PHBhdGggZD0iTTUuODQgMTQuMDljLS4yMi0uNjYtLjM1LTEuMzYtLjM1LTIuMDlzLjEzLTEuNDMuMzUtMi4wOVY3LjA3SDIuMThDMS40MyA4LjU1IDEgMTAuMjIgMSAxMnMuNDMgMy40NSAxLjE4IDQuOTNsMi44NS0yLjIyLjgxLS42MnoiIGZpbGw9IiNGQkJDMDUiLz48cGF0aCBkPSJNMTIgNS4zOGMxLjYyIDAgMy4wNi41NiA0LjIxIDEuNjRsMy4xNS0zLjE1QzE3LjQ1IDIuMDkgMTQuOTcgMSAxMiAxIDcuNyAxIDMuOTkgMy40NyAyLjE4IDcuMDdsMy42NiAyLjg0Yy44Ny0yLjYgMy4zLTQuNTMgNi4xNi00LjUzeiIgZmlsbD0iI0VBNDMzNSIvPjwvc3ZnPg==";
@@ -174,52 +172,8 @@ function App() {
     }
   };
 
-  const handleDownload = async () => {
-    const displayElement = displayRef.current;
-    if (!displayElement) return;
-    
-    // Evita que a sombra externa vire borda fantasma no raster final do PDF.
-    const originalShadow = displayElement.style.boxShadow;
-    displayElement.style.boxShadow = 'none';
-    displayElement.classList.add('pdf-export');
-    
-    try {
-      await document.fonts.ready;
-      await waitForPaint();
-
-      const canvas = await html2canvas(displayElement, {
-        scale: 4,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        removeContainer: true,
-        width: displayElement.offsetWidth,
-        height: displayElement.offsetHeight,
-        windowWidth: displayElement.offsetWidth,
-        windowHeight: displayElement.offsetHeight,
-        onclone: (_document, element) => {
-          element.classList.add('pdf-export');
-          (element as HTMLElement).style.boxShadow = 'none';
-        },
-      });
-    
-      const imgData = canvas.toDataURL('image/png', 1);
-    
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a6',
-        compress: false,
-        hotfixes: ['px_scaling'],
-      });
-    
-      // A imagem ja inclui toda a arte A6, sem sangria negativa que desloca cores/bordas.
-      pdf.addImage(imgData, 'PNG', 0, 0, 105, 148, undefined, 'NONE');
-      pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
-    } finally {
-      displayElement.classList.remove('pdf-export');
-      displayElement.style.boxShadow = originalShadow;
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   // Drag handlers para a logo
@@ -240,8 +194,13 @@ function App() {
     setIsDragging(false);
   };
 
-  // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
-  const gradientBg = `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
+  // Dinamicamente gera o gradiente premium
+  const gradientBg = `
+    radial-gradient(circle at 0% 0%, ${color1} 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, ${color2} 0%, transparent 60%),
+    linear-gradient(135deg, ${color1}22 0%, ${color2}22 100%),
+    #ffffff
+  `;
   const titleColor = `#0f172a`; // A placa de vidro é iluminada, o texto pode ser sempre escuro
 
   return (
@@ -434,9 +393,9 @@ function App() {
           </p>
         </div>
 
-        <button className="btn btn-primary" onClick={handleDownload} style={{ marginTop: 'auto' }}>
+        <button className="btn btn-primary" onClick={handlePrint} style={{ marginTop: 'auto' }}>
           <Download size={18} />
-          Baixar PDF Alta Resolução
+          Imprimir / Salvar PDF
         </button>
       </aside>
 
@@ -456,6 +415,8 @@ function App() {
                     background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
                     borderRadius: '16px',
                     boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                    backdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
+                    WebkitBackdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',

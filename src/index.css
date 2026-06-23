@@ -148,12 +148,14 @@ body {
 .glass-panel {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(25px) saturate(150%);
+  -webkit-backdrop-filter: blur(25px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.9);
+  border-left: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5), 0 15px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -307,4 +309,51 @@ body {
   margin-bottom: 1.5rem;
   width: 100%;
   max-width: 600px;
+}
+
+/* ------------------------------------------- */
+/* NATIVE PRINT EXPORT                         */
+/* ------------------------------------------- */
+
+@media print {
+  /* Reseta os fundos do navegador */
+  body, html, #root, .app-container {
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Esconde completamente a barra lateral e os controles de fundo da área de preview */
+  .sidebar, .header-controls {
+    display: none !important;
+  }
+
+  /* Força a área de preview a ocupar o espaço total sem margens/paddings intrusivos */
+  .preview-area {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: transparent !important;
+  }
+
+  /* Força a impressão dos gráficos de fundo (cores, gradientes) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Define o tamanho exato da placa para a impressão */
+  .display-card {
+    width: 10.5cm !important; /* Aproximadamente A6 */
+    height: 14.8cm !important;
+    transform: none !important;
+    box-shadow: none !important; /* Evita sombra vazando fora do recorte no papel */
+    margin: 0 auto;
+    page-break-inside: avoid;
+  }
 }
