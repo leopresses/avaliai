@@ -316,13 +316,19 @@ body {
 /* ------------------------------------------- */
 
 @media print {
+  @page {
+    size: 420px 592px; /* Força o tamanho do PDF a ser exatamente o tamanho da placa! */
+    margin: 0; /* Remove margens brancas do navegador */
+  }
+
   /* Reseta os fundos do navegador */
   body, html, #root, .app-container {
     background: transparent !important;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    width: 100vw;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 420px !important;
+    height: 592px !important;
+    overflow: hidden !important;
   }
 
   /* Esconde completamente a barra lateral e os controles de fundo da área de preview */
@@ -330,14 +336,13 @@ body {
     display: none !important;
   }
 
-  /* Força a área de preview a ocupar o espaço total sem margens/paddings intrusivos */
+  /* Força a área de preview a ocupar o espaço exato */
   .preview-area {
     padding: 0 !important;
     margin: 0 !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    display: block !important;
+    width: 420px !important;
+    height: 592px !important;
     background: transparent !important;
   }
 
@@ -347,13 +352,14 @@ body {
     print-color-adjust: exact !important;
   }
 
-  /* Define o tamanho exato da placa para a impressão */
+  /* A placa vai ocupar a página inteira (tela inteira no PDF) */
   .display-card {
-    width: 10.5cm !important; /* Aproximadamente A6 */
-    height: 14.8cm !important;
+    width: 420px !important;
+    height: 592px !important;
     transform: none !important;
-    box-shadow: none !important; /* Evita sombra vazando fora do recorte no papel */
-    margin: 0 auto;
+    box-shadow: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important; /* Retira arredondamento para o corte no papel ser reto */
     page-break-inside: avoid;
   }
 }
