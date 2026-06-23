@@ -220,12 +220,7 @@ function App() {
   };
 
   // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
-  const gradientBg = `
-    radial-gradient(circle at 0% 0%, ${color1} 0%, transparent 60%),
-    radial-gradient(circle at 100% 100%, ${color2} 0%, transparent 60%),
-    linear-gradient(135deg, ${color1}22 0%, ${color2}22 100%),
-    #ffffff
-  `;
+  const gradientBg = `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
   const titleColor = `#0f172a`; // A placa de vidro é iluminada, o texto pode ser sempre escuro
 
   return (
@@ -430,6 +425,7 @@ function App() {
         </div>
 
         <div className="display-card" ref={displayRef} style={{ background: gradientBg }}>
+        <div className="display-card" ref={displayRef} style={{ background: `linear-gradient(135deg, ${color1}, ${color2})` }}>
           <div className="glass-panel">
             
             <div className="display-header">
