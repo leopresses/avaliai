@@ -114,11 +114,6 @@ const getDominantColors = (imgSrc: string): Promise<[string, string]> => {
   });
 };
 
-const waitForPaint = () =>
-  new Promise<void>((resolve) => {
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-  });
-
 function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
