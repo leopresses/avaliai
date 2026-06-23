@@ -139,6 +139,9 @@ body {
   position: relative;
   overflow: hidden;
   padding: 1.5rem; /* The margin around the glass panel */
+  isolation: isolate;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 /* The true Glassmorphism Panel */
@@ -156,6 +159,7 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 .display-header {
@@ -208,6 +212,22 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
   display: inline-block;
+  line-height: 0;
+}
+
+.qr-container canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.display-card.pdf-export,
+.display-card.pdf-export * {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.display-card.pdf-export {
+  box-shadow: none !important;
 }
 
 .instruction-text {

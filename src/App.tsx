@@ -116,6 +116,11 @@ const getDominantColors = (imgSrc: string): Promise<[string, string]> => {
   });
 };
 
+const waitForPaint = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
+
 function App() {
   const [companyName, setCompanyName] = useState('Reserva Beer & Grill');
   const [logoImage, setLogoImage] = useState<string | null>(null);
@@ -170,35 +175,51 @@ function App() {
   };
 
   const handleDownload = async () => {
-    if (!displayRef.current) return;
+    const displayElement = displayRef.current;
+    if (!displayElement) return;
     
-    // Removemos a sombra temporariamente porque o html2canvas tenta capturar a sombra
-    // e a converte em uma borda cinza/branca no PDF final
-    const originalShadow = displayRef.current.style.boxShadow;
-    displayRef.current.style.boxShadow = 'none';
+    // Evita que a sombra externa vire borda fantasma no raster final do PDF.
+    const originalShadow = displayElement.style.boxShadow;
+    displayElement.style.boxShadow = 'none';
+    displayElement.classList.add('pdf-export');
     
-    const canvas = await html2canvas(displayRef.current, {
-      scale: 3,
-      useCORS: true,
-      backgroundColor: null,
-      logging: false,
-    });
+    try {
+      await document.fonts.ready;
+      await waitForPaint();
+
+      const canvas = await html2canvas(displayElement, {
+        scale: 4,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        removeContainer: true,
+        width: displayElement.offsetWidth,
+        height: displayElement.offsetHeight,
+        windowWidth: displayElement.offsetWidth,
+        windowHeight: displayElement.offsetHeight,
+        onclone: (_document, element) => {
+          element.classList.add('pdf-export');
+          (element as HTMLElement).style.boxShadow = 'none';
+        },
+      });
     
-    // Restaura a sombra na tela
-    displayRef.current.style.boxShadow = originalShadow;
+      const imgData = canvas.toDataURL('image/png', 1);
     
-    const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a6',
+        compress: false,
+        hotfixes: ['px_scaling'],
+      });
     
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a6'
-    });
-    
-    // Adiciona 1mm de "sangria" (bleed) de cada lado para garantir que cubra a página inteira
-    // e elimine qualquer linha branca de borda (105+2 = 107, 148+2 = 150)
-    pdf.addImage(imgData, 'PNG', -1, -1, 107, 150);
-    pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
+      // A imagem ja inclui toda a arte A6, sem sangria negativa que desloca cores/bordas.
+      pdf.addImage(imgData, 'PNG', 0, 0, 105, 148, undefined, 'NONE');
+      pdf.save(`${companyName.replace(/\s+/g, '_')}_QR_Display.pdf`);
+    } finally {
+      displayElement.classList.remove('pdf-export');
+      displayElement.style.boxShadow = originalShadow;
+    }
   };
 
   // Drag handlers para a logo
@@ -425,7 +446,6 @@ function App() {
         </div>
 
         <div className="display-card" ref={displayRef} style={{ background: gradientBg }}>
-        <div className="display-card" ref={displayRef} style={{ background: `linear-gradient(135deg, ${color1}, ${color2})` }}>
           <div className="glass-panel">
             
             <div className="display-header">
