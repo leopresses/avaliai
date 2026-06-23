@@ -128,6 +128,7 @@ function App() {
   const [color1, setColor1] = useState('#818cf8');
   const [color2, setColor2] = useState('#c084fc');
   const [showStars, setShowStars] = useState(true);
+  const [starColor, setStarColor] = useState('#fbbc04');
   const [logoPos, setLogoPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
@@ -352,16 +353,28 @@ function App() {
           />
         </div>
 
-        <div className="form-group">
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+        <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
             <input 
               type="checkbox" 
               checked={showStars} 
-              onChange={(e) => setShowStars(e.target.checked)}
-              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              onChange={(e) => setShowStars(e.target.checked)} 
+              style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer' }}
             />
             Mostrar 5 Estrelas
           </label>
+          
+          {showStars && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '0.5rem' }}>
+              <label style={{ fontSize: '0.85rem' }}>Cor das Estrelas:</label>
+              <input 
+                type="color" 
+                value={starColor} 
+                onChange={(e) => setStarColor(e.target.value)} 
+                style={{ width: '40px', height: '30px', cursor: 'pointer', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '1px' }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -462,7 +475,7 @@ function App() {
             </div>
 
             {showStars && (
-              <div className="google-stars">
+              <div className="google-stars" style={{ color: starColor }}>
                 <Star fill="currentColor" size={26} />
                 <Star fill="currentColor" size={26} />
                 <Star fill="currentColor" size={26} />
