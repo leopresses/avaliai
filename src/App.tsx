@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { Download, Star, QrCode, Upload } from 'lucide-react';
@@ -477,15 +477,16 @@ function App() {
 
             <div className="qr-container">
               {reviewLink ? (
-                <QRCodeSVG 
+                <QRCodeCanvas 
                   value={reviewLink} 
-                  size={200}
+                  size={800} // Gera um canvas gigante para qualidade máxima
+                  style={{ width: '200px', height: '200px' }} // Exibe no tamanho normal
                   level="H"
                   includeMargin={false}
                   imageSettings={{
                     src: qrIconImage || googleGBase64,
-                    height: 48,
-                    width: 48,
+                    height: 192, // Escala o ícone proporcionalmente (800 / 200 * 48)
+                    width: 192,
                     excavate: true,
                   }}
                 />
