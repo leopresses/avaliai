@@ -219,8 +219,13 @@ function App() {
   };
 
   // Dinamicamente gera o gradiente do fundo e a cor do texto baseada no slider e estilo
-  const gradientBg = `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
-  const titleColor = `#0f172a`; // A placa de vidro é branca, o texto pode ser sempre escuro
+  const gradientBg = `
+    radial-gradient(circle at 0% 0%, ${color1} 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, ${color2} 0%, transparent 60%),
+    linear-gradient(135deg, ${color1}22 0%, ${color2}22 100%),
+    #ffffff
+  `;
+  const titleColor = `#0f172a`; // A placa de vidro é iluminada, o texto pode ser sempre escuro
 
   return (
     <div className="app-container">
@@ -421,6 +426,8 @@ function App() {
                     background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
                     borderRadius: '16px',
                     boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
+                    backdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
+                    WebkitBackdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',

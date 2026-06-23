@@ -145,12 +145,14 @@ body {
 .glass-panel {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(40px) saturate(150%);
+  -webkit-backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.3), 0 15px 40px 0 rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -196,15 +198,15 @@ body {
   font-weight: 800;
   color: var(--color-text-main);
   margin-bottom: 1.5rem;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.05em;
 }
 
 /* QR Code sits on a solid white base to guarantee scanning */
 .qr-container {
   background: white;
-  padding: 0.75rem;
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
   display: inline-block;
 }
 
@@ -212,9 +214,9 @@ body {
   font-size: 1.05rem;
   margin-top: auto;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-muted);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .google-accent-bar {
