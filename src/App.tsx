@@ -176,7 +176,6 @@ function App() {
     // e a converte em uma borda cinza/branca no PDF final
     const originalShadow = displayRef.current.style.boxShadow;
     displayRef.current.style.boxShadow = 'none';
-    displayRef.current.classList.add('export-mode');
     
     const canvas = await html2canvas(displayRef.current, {
       scale: 3,
@@ -187,7 +186,6 @@ function App() {
     
     // Restaura a sombra na tela
     displayRef.current.style.boxShadow = originalShadow;
-    displayRef.current.classList.remove('export-mode');
     
     const imgData = canvas.toDataURL('image/png');
     
@@ -438,8 +436,6 @@ function App() {
                     background: logoBgOpacity > 0 ? `rgba(0, 0, 0, ${logoBgOpacity / 100})` : 'transparent',
                     borderRadius: '16px',
                     boxShadow: logoBgOpacity > 0 ? '0 10px 25px rgba(0,0,0,0.2)' : 'none',
-                    backdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
-                    WebkitBackdropFilter: logoBgOpacity > 0 ? 'blur(15px)' : 'none',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
