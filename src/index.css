@@ -507,13 +507,19 @@ body {
 }
 
 /* ------------------------------------------- */
-/* NATIVE PRINT EXPORT                         */
+/* NATIVE PRINT EXPORT (PURE VECTOR MODE)      */
 /* ------------------------------------------- */
 
 @media print {
   @page {
-    size: 1680px 2368px; /* Força o PDF a ter resolução 4K (4x 420x592) */
+    size: 105mm 148mm; /* Tamanho exato A6 */
     margin: 0;
+  }
+
+  /* Desativa o backdrop-filter pois é o causador da rasterização de baixa resolução no Chrome */
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   /* Reseta os fundos do navegador */
@@ -521,8 +527,8 @@ body {
     background: transparent !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 1680px !important;
-    height: 2368px !important;
+    width: 105mm !important;
+    height: 148mm !important;
     overflow: hidden !important;
   }
 
@@ -536,8 +542,8 @@ body {
     padding: 0 !important;
     margin: 0 !important;
     display: block !important;
-    width: 1680px !important;
-    height: 2368px !important;
+    width: 105mm !important;
+    height: 148mm !important;
     background: transparent !important;
   }
 
@@ -547,15 +553,20 @@ body {
     print-color-adjust: exact !important;
   }
 
-  /* A placa vai ser escalada 4x internamente para qualidade 4K */
+  /* A placa vai ocupar a página A6 inteira em modo VETORIAL */
   .display-card {
-    zoom: 4 !important; /* Mágica: multiplica todos os pixels por 4 nativamente no motor do Chrome */
-    width: 420px !important;
-    height: 592px !important;
+    width: 105mm !important;
+    height: 148mm !important;
     transform: none !important;
     box-shadow: none !important;
     margin: 0 !important;
     border-radius: 0 !important;
     page-break-inside: avoid;
+  }
+
+  /* Compensa a perda do blur com um gradiente sólido lindíssimo e rico */
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.85) 100%) !important;
+    box-shadow: inset 0 0 10px rgba(255,255,255,1) !important;
   }
 }
