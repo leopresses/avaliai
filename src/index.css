@@ -310,8 +310,7 @@ body {
   width: 100%;
   max-width: 600px;
 }
-  color: white;
-}
+
 
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
