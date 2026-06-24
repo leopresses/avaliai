@@ -357,7 +357,6 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
-  transform: translateZ(0);
 }
 
 .display-header {
