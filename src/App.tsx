@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { toPng } from 'html-to-image';
+import { jsPDF } from 'jspdf';
 import { Download, Star, QrCode, Upload } from 'lucide-react';
 
 const googleGBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTIyLjU2IDEyLjI1YzAtLjc4LS4wNy0xLjUzLS4yLTIuMjVIMTJ2NC4yNmg1LjkyYy0uMjYgMS4zNy0xLjA0IDIuNTMtMi4yMSAzLjMxdjIuNzdoMy41N2MyLjA4LTEuOTIgMy4yOC00Ljc0IDMuMjgtOC4wOXoiIGZpbGw9IiM0Mjg1RjQiLz48cGF0aCBkPSJNMTIgMjNjMi45NyAwIDUuNDYtLjk4IDcuMjgtMi42NmwtMy41Ny0yLjc3Yy0uOTguNjYtMi4yMyAxLjA2LTMuNzEgMS4wNi0yLjg2IDAtNS4yOS0xLjkzLTYuMTYtNC41M0gyLjE4djIuODRDMy45OSAyMC41MyA3LjcgMjMgMTIgMjN6IiBmaWxsPSIjMzRBMDUzIi8+PHBhdGggZD0iTTUuODQgMTQuMDljLS4yMi0uNjYtLjM1LTEuMzYtLjM1LTIuMDlzLjEzLTEuNDMuMzUtMi4wOVY3LjA3SDIuMThDMS40MyA4LjU1IDEgMTAuMjIgMSAxMnMuNDMgMy40NSAxLjE4IDQuOTNsMi44NS0yLjIyLjgxLS42MnoiIGZpbGw9IiNGQkJDMDUiLz48cGF0aCBkPSJNMTIgNS4zOGMxLjYyIDAgMy4wNi41NiA0LjIxIDEuNjRsMy4xNS0zLjE1QzE3LjQ1IDIuMDkgMTQuOTcgMSAxMiAxIDcuNyAxIDMuOTkgMy40NyAyLjE4IDcuMDdsMy42NiAyLjg0Yy44Ny0yLjYgMy4zLTQuNTMgNi4xNi00LjUzeiIgZmlsbD0iI0VBNDMzNSIvPjwvc3ZnPg==";
@@ -167,8 +169,37 @@ function App() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownload = async () => {
+    const displayElement = displayRef.current;
+    if (!displayElement) return;
+    
+    displayElement.classList.add('pdf-export');
+    
+    try {
+      await document.fonts.ready;
+      
+      // Gera a imagem em altíssima resolução (4x a resolução da tela original)
+      const dataUrl = await toPng(displayElement, {
+        quality: 1.0,
+        pixelRatio: 4,
+        cacheBust: true,
+      });
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a6',
+        compress: true,
+      });
+
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 105, 148, undefined, 'FAST');
+      pdf.save(`${companyName.replace(/\s+/g, '_')}_Placa_Premium.pdf`);
+    } catch (err) {
+      console.error("Erro ao gerar PDF", err);
+      alert("Ocorreu um erro ao gerar o PDF em alta qualidade.");
+    } finally {
+      displayElement.classList.remove('pdf-export');
+    }
   };
 
   // Drag handlers para a logo
@@ -388,9 +419,9 @@ function App() {
           </p>
         </div>
 
-        <button className="btn btn-primary" onClick={handlePrint} style={{ marginTop: 'auto' }}>
+        <button className="btn btn-primary" onClick={handleDownload} style={{ marginTop: 'auto' }}>
           <Download size={18} />
-          Imprimir / Salvar PDF
+          Baixar PDF Alta Resolução (4K)
         </button>
       </aside>
 
